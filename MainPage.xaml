@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="CalculatorMauiApp.MainPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             BackgroundColor="#101418"
+             Title="Calculatrice">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <!-- Style commun à tous les boutons de chiffres -->
+            <Style x:Key="DigitButtonStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#2A2F36" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="CornerRadius" Value="0" />
+                <Setter Property="HeightRequest" Value="68" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+                <Setter Property="VerticalOptions" Value="Fill" />
+            </Style>
+
+            <!-- Style pour les opérateurs (+ - x /) -->
+            <Style x:Key="OperatorButtonStyle" TargetType="Button" BasedOn="{StaticResource DigitButtonStyle}">
+                <Setter Property="BackgroundColor" Value="#FF9F0A" />
+                <Setter Property="TextColor" Value="White" />
+            </Style>
+
+            <!-- Style pour les fonctions (AC, +/-, %, ⌫) -->
+            <Style x:Key="FunctionButtonStyle" TargetType="Button" BasedOn="{StaticResource DigitButtonStyle}">
+                <Setter Property="BackgroundColor" Value="#3F444B" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="FontSize" Value="22" />
+            </Style>
+
+            <!-- Style pour le bouton = -->
+            <Style x:Key="EqualsButtonStyle" TargetType="Button" BasedOn="{StaticResource DigitButtonStyle}">
+                <Setter Property="BackgroundColor" Value="#0A84FF" />
+                <Setter Property="TextColor" Value="White" />
+            </Style>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <!-- ScrollView racine : garantit qu'aucun contenu ne déborde sur petit écran
+         ou lors d'un changement d'orientation (paysage). -->
+    <ScrollView>
+
+        <!-- Grid principale : sépare l'écran en une zone d'affichage (Auto)
+             et une zone de clavier (contenu dynamique). -->
+        <Grid RowDefinitions="Auto,Auto"
+              Padding="16"
+              RowSpacing="10">
+
+            <!-- ==================== ZONE D'AFFICHAGE ==================== -->
+            <Border Grid.Row="0"
+                    Stroke="Transparent"
+                    BackgroundColor="#1C2126"
+                    StrokeShape="RoundRectangle 24"
+                    Padding="20"
+                    HeightRequest="120">
+
+                <VerticalStackLayout Spacing="0">
+
+                    <!-- Ligne d'opération en cours, au-dessus du résultat -->
+                    <Label x:Name="ExpressionLabel"
+                           Text=" "
+                           TextColor="#8A8F98"
+                           FontSize="20"
+                           HorizontalOptions="End"
+                           HorizontalTextAlignment="End"
+                           LineBreakMode="TailTruncation" />
+
+                    <!-- Résultat / saisie courante -->
+                    <Label x:Name="ResultLabel"
+                           Text="0"
+                           TextColor="White"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           HorizontalOptions="End"
+                           HorizontalTextAlignment="End"
+                           LineBreakMode="TailTruncation"
+                           MaxLines="1" />
+
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ==================== CLAVIER NUMÉRIQUE ==================== -->
+            <Grid Grid.Row="1"
+                  ColumnDefinitions="*,*,*,*"
+                  RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                  ColumnSpacing="8"
+                  RowSpacing="3">
+
+                <!-- Ligne 1 : AC, effacer, %, ÷ -->
+                <Border Grid.Row="0" Grid.Column="0" StrokeShape="RoundRectangle 16" Stroke="Transparent">
+                    <Button Text="AC" Style="{StaticResource FunctionButtonStyle}" Clicked="OnClearClicked" />
+                </Border>
+                <Border Grid.Row="0" Grid.Column="1" StrokeShape="RoundRectangle 16" Stroke="Transparent">
+                    <Button Text="⌫" Style="{StaticResource FunctionButtonStyle}" Clicked="OnBackspaceClicked" />
+                </Border>
+                <Border Grid.Row="0" Grid.Column="2" StrokeShape="RoundRectangle 16" Stroke="Transparent">
+                    <Button Text="%" Style="{StaticResource FunctionButtonStyle}" Clicked="OnPercentClicked" />
+                </Border>
+                <Border Grid.Row="0" Grid.Column="3" StrokeShape="RoundRectangle 16" Stroke="Transparent">
+                    <Button Text="÷" Style="{StaticResource OperatorButtonStyle}" Clicked="OnOperatorClicked" />
+                </Border>
+
+                <!-- Ligne 2 : 7 8 9 x -->
+                <Border Grid.Row="1" Grid.Column="0" StrokeShape="RoundRectangle 16" Stroke="Transparent">
+                    <Button Text="7" Style="{StaticResource DigitButtonStyle}" Clicked="OnDigitClicked" />
+                </Border>
+                <Border Grid.Row="1" Grid.Column="1" StrokeShape="RoundRectangle 16" Stroke="Transparent">
+                    <Button Text="8" Style="{StaticResource DigitButtonStyle}" Clicked="OnDigitClicked" />
+                </Border>
+                <Border Grid.Row="1" Grid.Column="2" StrokeShape="RoundRectangle 16" Stroke="Transparent">
+                    <Button Text="9" Style="{StaticResource DigitButtonStyle}" Clicked="OnDigitClicked" />
+                </Border>
+                <Border Grid.Row="1" Grid.Column="3" StrokeShape="RoundRectangle 16" Stroke="Transparent">
+                    <Button Text="×" Style="{StaticResource OperatorButtonStyle}" Clicked="OnOperatorClicked" />
+                </Border>
+
+                <!-- Ligne 3 : 4 5 6 - -->
+                <Border Grid.Row="2" Grid.Column="0" StrokeShape="RoundRectangle 16" Stroke="Transparent">
+                    <Button Text="4" Style="{StaticResource DigitButtonStyle}" Clicked="OnDigitClicked" />
+                </Border>
+                <Border Grid.Row="2" Grid.Column="1" StrokeShape="RoundRectangle 16" Stroke="Transparent">
+                    <Button Text="5" Style="{StaticResource DigitButtonStyle}" Clicked="OnDigitClicked" />
+                </Border>
+                <Border Grid.Row="2" Grid.Column="2" StrokeShape="RoundRectangle 16" Stroke="Transparent">
+                    <Button Text="6" Style="{StaticResource DigitButtonStyle}" Clicked="OnDigitClicked" />
+                </Border>
+                <Border Grid.Row="2" Grid.Column="3" StrokeShape="RoundRectangle 16" Stroke="Transparent">
+                    <Button Text="−" Style="{StaticResource OperatorButtonStyle}" Clicked="OnOperatorClicked" />
+                </Border>
+
+                <!-- Ligne 4 : 1 2 3 + -->
+                <Border Grid.Row="3" Grid.Column="0" StrokeShape="RoundRectangle 16" Stroke="Transparent">
+                    <Button Text="1" Style="{StaticResource DigitButtonStyle}" Clicked="OnDigitClicked" />
+                </Border>
+                <Border Grid.Row="3" Grid.Column="1" StrokeShape="RoundRectangle 16" Stroke="Transparent">
+                    <Button Text="2" Style="{StaticResource DigitButtonStyle}" Clicked="OnDigitClicked" />
+                </Border>
+                <Border Grid.Row="3" Grid.Column="2" StrokeShape="RoundRectangle 16" Stroke="Transparent">
+                    <Button Text="3" Style="{StaticResource DigitButtonStyle}" Clicked="OnDigitClicked" />
+                </Border>
+                <Border Grid.Row="3" Grid.Column="3" StrokeShape="RoundRectangle 16" Stroke="Transparent">
+                    <Button Text="+" Style="{StaticResource OperatorButtonStyle}" Clicked="OnOperatorClicked" />
+                </Border>
+
+                <!-- Ligne 5 : +/-, 0, . , = -->
+                <Border Grid.Row="4" Grid.Column="0" StrokeShape="RoundRectangle 16" Stroke="Transparent">
+                    <Button Text="+/-" Style="{StaticResource FunctionButtonStyle}" Clicked="OnSignClicked" />
+                </Border>
+                <Border Grid.Row="4" Grid.Column="1" StrokeShape="RoundRectangle 16" Stroke="Transparent">
+                    <Button Text="0" Style="{StaticResource DigitButtonStyle}" Clicked="OnDigitClicked" />
+                </Border>
+                <Border Grid.Row="4" Grid.Column="2" StrokeShape="RoundRectangle 16" Stroke="Transparent">
+                    <Button Text="." Style="{StaticResource DigitButtonStyle}" Clicked="OnDecimalClicked" />
+                </Border>
+                <Border Grid.Row="4" Grid.Column="3" StrokeShape="RoundRectangle 16" Stroke="Transparent">
+                    <Button Text="=" Style="{StaticResource EqualsButtonStyle}" Clicked="OnEqualsClicked" />
+                </Border>
+
+            </Grid>
+
+        </Grid>
+    </ScrollView>
+
+</ContentPage>
